@@ -31,8 +31,8 @@ if(!$_GET["gal"] && $_GET["page"] ) {
 	// Initialize the UberGallery object
 	$gallery = new UberGallery();
 	
-	// Select your path for your galleries
-	$galleyPath = "./path/to/galleries/";
+	// Select your path for your gallries
+	$galleyPath = "./gallery-images/";
 
 
 	// Include your header file here
