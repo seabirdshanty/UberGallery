@@ -11,7 +11,24 @@ under the [MIT License](http://www.opensource.org/licenses/mit-license.php). Ube
 and UberGallery will automatically generate thumbnails and output standards compliant XHTML markup
 on the fly.
 
-Like this project? Want to keep it free? [Make a donation](https://cash.me/$ChrisKankiewicz).
+Please read the [original readme](https://github.com/UberGallery/UberGallery/blob/master/README.md) for more info, as the rest of this readme
+will pretain to my fork!
+
+Freakmoch fork "SuberGallery"
+------------
+
+This fork takes ubergallery and, instead of making it it's own themed page with a standalone page, allows you 
+to incorperate your gallery into your own layouts/themes. (It probably could already do that but I couldn't figure it
+out lol)
+
+This also abuses the script to allow the use of having *multiple galleries* using subdirectories in
+your gallery folder and allowing pagination to work on everything. You can see how this functions on my websites,
+[eternal-anime.org](https://eternal-anime.org/gallery.php) and [kinotabi.info](https://kinotabi.info/gallery.php)
+
+
+I originally made this a stand-alone php file, but I realized I had more involved config as I updated this for
+my own site, so I just forked UberGallery itself.
+
 
 Features
 --------
@@ -21,7 +38,15 @@ Features
   * Create multiple galleries with a single installation
   * Easily customize your gallery styles via CSS
   * Install and update the gallery easily wth Git (optional)
+  * Have multiple subgalleries
 
+Limits
+--------
+
+   * UberGallery cannot handle any GIFs above 3MB or extremely large (>5MB jpg/png files. (Yes, I have tested these limits
+for my fansites lol) I reccommend you use something like PhotoScape to scale down.
+   * Loading more than 100 images in no-pagination mode will make your gallery lag, or hardly load, so please be careful with this.
+   * Currently gallery paths are grabbed via the php GET method. Someday I will chnage this to be better.
 
 Requirements
 ------------
@@ -36,148 +61,17 @@ to your liking.
 
   2. Upload `index.php`, `resources/` and `gallery-images/` to your web server.
 
-  3. Upload images to the `gallery-images/` directory.
+  3. Go into index.php and configure the path to your gallery folder. 
 
-  4. Make the `resources/cache/` directory writable by the web server:
+  4. Upload images to the `gallery-images/` directory.
 
-    ```
-    chmod 777 /path/to/resources/cache
-    ```
-
-  5. Open your web browser and load the page where you installed UberGallery.
-
-
-Custom Installation
--------------------
-  1. Copy `resources/sample.galleryConfig.ini` to `resources/galleryConfig.ini` and modify the settings
-to your liking.
-
-  2. Upload the `resources/` folder to your web server.
-
-  3. Insert the following code into the PHP page where you would like the gallery to be displayed
-(be sure to change the include and image folder path to match your configuration):
-
-    ```php
-    <?php include_once('path/to/resources/UberGallery.php'); $gallery = UberGallery::init()->createGallery('path/to/images-folder'); ?>
-    ```
-
-  4. Include the UberGallery and desired ColorBox style sheet in your page header:
-
-    ```html
-    <link rel="stylesheet" type="text/css" href="path/to/resources/UberGallery.css" />
-    <link rel="stylesheet" type="text/css" href="path/to/resources/colorbox/1/colorbox.css" />
-    ```
-
-    **NOTE:** You can replace the `1` with a value between 1 and 5 for different ColorBox themes.
-
-  5. Include the jQuery and ColorBox javascript files in your page header:
-
-    ```html
-    <script type="text/javascript" src="://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script type="text/javascript" src="path/to/resources/colorbox/jquery.colorbox.js"></script>
-    ```
-
-  6. Include the ColorBox jquery call in your header:
-
-    ```html
-    <script type="text/javascript">
-    $(document).ready(function(){
-        $("a[rel='colorbox']").colorbox({maxWidth: "90%", maxHeight: "90%", opacity: ".5"});
-    });
-    </script>
-    ```
-
-  7. Upload images to your images directory.
-
-  8. Make the `resources/cache/` directory writable by the web server.
+  5. Make the `resources/cache/` directory writable by the web server:
 
     ```
     chmod 777 /path/to/resources/cache
     ```
 
-  9. Open your web browser and load the page where you installed UberGallery.
-
-
-Install with Git
-----------------
-  1. SSH into the your server and clone the UberGallery repository and submodules:
-
-    ```
-    git clone --recursive git://github.com/UberGallery/UberGallery.git /path/to/ubergallery
-    ```
-
-  2. Copy `resources/sample.galleryConfig.ini` to `resources/galleryConfig.ini` and modify the settings
-
-    ```
-    cp resources/sample.galleryConfig.ini resources/galleryConfig.ini
-    nano resources/galleryConfig.ini
-    ```
-
-  3. Upload images to the `gallery-images/` folder within your gallery directory.
-
-  4. Make the `resources/cache/` directory writable by the web server.
-
-    ```
-    chmod 777 /path/to/resources/cache
-    ```
-
-  5. Open your web browser and load the page where you installed UberGallery.
-
-When using this method to install UberGallery, you may update your installation by running
-the following commands:
-
-    cd /path/to/gallery-directory
-    git pull origin master
-    git submodule update
-
-**NOTE:** If you are installing UberGallery via git into an existing git repository, you will need
-to add it as a submodule.
-
-    git submodule add git://github.com/UberGallery/UberGallery.git path/to/ubergallery
-    git submodule update --init --recursive path/to/ubergallery
-
-
-Troubleshooting
----------------
-If you're having issues with UberGallery here are a few troubleshooting tips:
-
-  * Verify that you have PHP 5.2 or later installed.  You can verify your PHP version by running:
-
-    ```
-    php --version
-    ```
-
-  * Make sure you have the latest version of UberGallery installed.  You can always find the latest
-    version at <http://www.ubergallery.net/#download>
-
-  * Replace your `galleryConfig.ini` with `sample.galleryConfig.ini` to ensure proper configuration:
-
-    ```
-    rm resources/galleryConfig.ini
-    cp resource/sample.galleryConfig.ini resources/galleryConfig.ini
-    ```
-
-  * Clear your cache and make sure the directory is writable by the web server:
-
-    ```
-    rm -f resources/cache/*
-    chmod 777 resources/cache
-    ```
-
-  * Enable debugging by setting the `enable_debugging` option in `resources/galleryConfig.ini` to
-    `true`, try loading your gallery in a web browser then inspect the debug.log file in your cache
-    directory for any errors.
-
-If you continue to have issues, please email me at: <Chris@ChrisKankiewicz.com>
-
-
-News & Updates
---------------
-UberGallery updates and news can be found on our [blog](http://news.ubergallery.net) or by
-following [@UberGallery](http://twitter.com/ubergallery) on Twitter.
-
-Please report bugs to the [Github issue tracker](http://github.com/UberGallery/ubergallery/issues).
-
+  6. Open your web browser and load the page where you installed UberGallery.
 
 License
 -------
