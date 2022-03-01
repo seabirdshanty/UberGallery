@@ -13,14 +13,23 @@
 	
 	Updated Febuary 2022 to become a fork of UberGallery.
 	
+	THERE ARE HEADER & FOOTER (php) INCLUDES IN THIS CODE!
+	If you do not want these, CTRL+F to find them and comment them out.
+	
+	Eventually I will update this code to make them configurable in the beginning.
 */
 
-session_start();
-// NEEDED for pagination.
+////////////////////////////////////////////////////////////////
+// CONFIG
+///////////////////////////////////////////////////////////////
 
 $galleyPath = "./files/galleries/";
 
-$galpal = $_SESSION["current-gal"]; // Do not touch.
+///////////////////////////////////////////////////////////////
+// Do NOT go past this unless you know what you're doing!
+
+session_start(); // Do not touch.
+$galpal = $_SESSION["current-gal"]; // Do NOT touch.
 
 // Redirection Error Proccessing
 
@@ -46,6 +55,9 @@ if($errors > 0) {
 	unset($errors);
 	die("Redirecting...");
 } else { // forces the page to load with no errors.
+	
+	// be a-Head of the game
+	include('header.php');
 
 	// Include the UberGallery class
 	include('./resources/UberGallery.php');
@@ -189,6 +201,9 @@ if($errors > 0) {
 					<?php
 
 			}
+	
+		// Something is a-Foot
+		include("footer.php");
 
 	}
 	?>
