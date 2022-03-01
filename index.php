@@ -18,12 +18,34 @@
 session_start();
 // NEEDED for pagination.
 
+$galleyPath = "./files/galleries/";
+
+$galpal = $_SESSION["current-gal"]; // Do not touch.
+
+// Redirection Error Proccessing
+
+$errors = 0;
+
 if(!$_GET["gal"] && $_GET["page"] ) {
-	$newpage = "gallery.php?gal=" . $_SESSION["gal-check"] . "&page=" . $_GET["page"] ;
-	#echo $newpage;
-	header("Location: $newpage");
-	die();
+	// Not so much an error as it is to enable pagination for all galleries.
+	$newpage = "gallery.php?gal=" . $_SESSION["current-gal"] . "&page=" . $_GET["page"] ;
+	$errors++;
 }
+
+if($_GET["gal"] != "" && !is_dir($galleyPath.$_GET["gal"])) {
+	// Makes sure the GET is a real directory, otherwise the script dies.
+	unset($_GET["gal"]); unset($_SESSION["current-gal"]);
+	// destroys the variables to ensure no bad actors cache.
+	$errors++;
+	die($galleyPath.$_GET["gal"] . "is not a directory!");
+}
+	
+
+if($errors > 0) {
+	header("Location: $newpage");
+	unset($errors);
+	die("Redirecting...");
+} else { // forces the page to load with no errors.
 
 	// Include the UberGallery class
 	include('./resources/UberGallery.php');
@@ -31,56 +53,46 @@ if(!$_GET["gal"] && $_GET["page"] ) {
 	// Initialize the UberGallery object
 	$gallery = new UberGallery();
 	
-	// Select your path for your gallries
-	$galleyPath = "./gallery-images/";
+	$TheGalleries  = array();
+	// makes your gallery array
 
-
-	// Include your header file here
-	require_once( './path/to/header.php' );
-
-
-	if (!$_SERVER['QUERY_STRING'] && !$_GET["gal"]) {
-
-		$TheGalleries  = array();
-		// makes your gallery array
-
-		$dircount = 0;
-		// stops .  and .. from showing up as valid directories
-		$scanGal = scandir($galleyPath);
-		// scans your galleries path
-		foreach($scanGal as $hungryHippo) {
-			$dircount++;
-			if($dircount >= 3 ) {
-				$handSan = preg_replace('/[^\p{L}\p{N}\s]/u', '', $hungryHippo);
-				//cleans the directory names.
-				// echo "I took " . $hungryHippo . " and see " . $handSan  . "<br />";
-				if (is_dir($galleyPath.$handSan."/")) {
-					// echo $handSan . " is a valid directory! <br />";
-					array_push($TheGalleries, $handSan);
-					// pushes each dr into the galleries array/
-				}
-			}
+	$dircount = 0;
+	// stops .  and .. from showing up as valid directories
+	$scanGal = scandir($galleyPath);
+	// scans your galleries path
+	foreach($scanGal as $hungryHippo) {
+		$dircount++;
+		if($dircount >= 3 ) {
+			$handSan = preg_replace('/[^\p{L}\p{N}\s]/u', '', $hungryHippo);
+			//cleans the directory names.
+			// echo "I took " . $hungryHippo . " and see " . $handSan  . "<br />";
+			if (is_dir($galleyPath.$handSan."/")) {
+				// echo $handSan . " is a valid directory! <br />";
+				array_push($TheGalleries, $handSan);
+				// pushes each dr into the galleries array/
+			} 
 		}
-		unset($hungryHippo);
+	}
+	
+	unset($hungryHippo);
 
 
-		?>
-		<section>
+	if (!$_SERVER['QUERY_STRING'] && !$_GET["gal"]) { 
+		unset($_SESSION["gal-check"]);
+	?>
+	
+	<section>
 	 	<h1>Image Galleries</h1>
 		<p>Gallerys of different series illustrations/screenscaps/artwork, oh my! This is just a small collection.</p>
 			<p style="text-align:left">
-					<ul style="list-style-image: url(./resources/folder.gif)">
+				<ul style="list-style-image: url(./files/img/folder.gif)">
+				<?php foreach($TheGalleries as &$albumBaby) { ?>
 
-			<?php foreach($TheGalleries as &$albumBaby) { ?>
-
-			<li>
-				<a href="?gal=<?php echo $albumBaby ?>"><?php echo $albumBaby ?></a>
-			</li>
-<?php
-
-			}
-
-?>			</ul>
+					<li>
+						<a href="?gal=<?php echo $albumBaby ?>"><?php echo $albumBaby ?></a>
+					</li>
+				<?php } ?>			
+				</ul>
 		<p></p>
 	</section>
 
@@ -91,15 +103,16 @@ if(!$_GET["gal"] && $_GET["page"] ) {
 
 		<?php
 
-					$_SESSION["gal-check"] = $galpal = $_GET["gal"];
+					$_SESSION["current-gal"] = $galpal = $_GET["gal"];
 					// Initialize the gallery array
 					// prepare your ass
-					
+					echo "DEBUG: Hi! I'm looking for images from $galleyPath".$galpal."!<br />";
+
 					?>
 
 				<ol class="breadcrumb arr-right">
 					<li class="breadcrumb-item "><a href="gallery.php">Gallery</a></li>
-					<?
+					<?php
 
 					if(strpos($galpal,"/")) {
 						#echo "DEBUG: This gallery is a subdirectory!<br />";
@@ -122,7 +135,7 @@ if(!$_GET["gal"] && $_GET["page"] ) {
 
 
 						?>
-					<li class="breadcrumb-item active" aria-current="page"><?php echo $_GET["gal"]; ?></li>
+					<li class="breadcrumb-item active" aria-current="page"><?php echo $galpal; ?></li>
 					<?php } ?>
 
 
@@ -151,7 +164,7 @@ if(!$_GET["gal"] && $_GET["page"] ) {
 		<?php
 
 
-					$galleryArray = $gallery->readImageDirectory($galleyPath.$_GET["gal"]);
+					$galleryArray = $gallery->readImageDirectory($galleyPath.$galpal);
 
 					// Define theme path
 					if (!defined('THEMEPATH')) {
@@ -168,6 +181,8 @@ if(!$_GET["gal"] && $_GET["page"] ) {
 							die('ERROR: Failed to initialize theme');
 					}
 
+					
+
 					?>
 					</center>
 					</section>
@@ -175,7 +190,5 @@ if(!$_GET["gal"] && $_GET["page"] ) {
 
 			}
 
-		// include your footer here
-		require_once( './path/to/footer.php' );
-
+	}
 	?>
