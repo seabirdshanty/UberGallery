@@ -4,3 +4,5 @@ This fork of UberGallery will **not** display images in this folder, instead it 
 links to your multiple "galleries" (subfolders in this directory), hence the nickname "Sub"erGallery.
 
 Any images in this main directory will not show at all!
+
+I've provided sample images for each gallery :D
